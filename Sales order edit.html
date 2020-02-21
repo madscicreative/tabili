@@ -1,0 +1,209 @@
+<div class="page-break">
+    <div style="height: 2.5em"></div>
+    {% if letter_head and not no_letterhead %}
+        <table style="margin-bottom: 3em;" class="table no-margin">
+            <tr>
+                <td style="border-top-style: hidden; width: 50%;"> {{ letter_head|safe }}</td>
+                <td style="border-top-style: hidden;">
+                    <p class="text-right address-text">
+                        Electro-Comp Tape and Reel Services, LLC<br>
+                        6399 142nd Avenue N Suite 108<br>
+                        Clearwater, Florida 33760<br>
+                        Phone 727-216-6441 Fax 727-408-5286<br>
+                        www.electrocomptr.com
+                    </p>
+                </td>
+            </tr>
+        </table>
+    {% endif %}
+
+    <h1 class="text-center" style="margin-top: 2.5em;">SALES ORDER</h1>
+
+    <table style="margin-bottom: 2em;" class="table table-bordered"
+        style="margin-bottom: 1em; border: 1px solid #000000; border-bottom-style: solid; border-bottom-width: 1px;">
+        "
+        <tr>
+            <td colspan="2" class="text-center">
+                Bill To
+            </td>
+            <td colspan="2" class="text-center">
+                Ship To
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2" class="banner" style="width: 50%; padding: 1em;">
+                <div>
+                    <div style="display: block;">
+                        ACME Corporation
+                    </div>
+
+                    <div style="display: block;">
+                        1234 Main Street
+                    </div>
+
+                    <div style = "display: block;">
+                        Clearwater, FL 33760
+                    </div>
+                    
+                </div>
+            </td>
+
+            <td style="width: 50%;" colspan="2">
+                <div>
+                    <div style="display: block;">
+                        ACME Corporation
+                    </div>
+                    <div style="display: block;">
+                        1234 Main Street
+                    </div>
+                    <div style="display: block;">
+                        Clearwater, FL 33760
+                    </div>
+                </div>
+            </td>
+            
+        </tr>
+    </table>
+
+    <table style="margin-bottom: 2em;" class="table table-bordered no-margin "
+        style="margin-bottom: 1em; border: 1px solid #000000; border-bottom-style: solid; border-bottom-width: 1px;">
+        <tbody>
+            <tr>
+                <td class="label-cell bolder">Quote Number</td>
+                <td class="input-cell bolder" style="border-left-style: hidden;">{{ doc.name}}</td>
+                <td class="label-cell">Delivery</td>
+                <td class="input-cell" style="border-left-style: hidden;">{{ doc.delivery|default('') }}</td>
+            </tr>
+            <tr>
+                <td class="label-cell bolder">Quote Date</td>
+                <td class="input-cell bolder" style="border-left-style: hidden;">{{ doc.get_formatted('transaction_date') }}</td>
+                <td class="label-cell">Ship Method</td>
+                <td class="input-cell" style="border-left-style: hidden;">{{ doc.shipping_method|default('') }}</td>
+            </tr>
+            <tr>
+                <td class="label-cell bolder">Quote Valid Until</td>
+                <td class="input-cell bolder" style="border-left-style: hidden;">{{ doc.get_formatted('valid_till') }}</td>
+                <td class="label-cell">Incoterms</td>
+                <td class="input-cell" style="border-left-style: hidden;">{{ doc.incoterms|default('') }}</td>
+            </tr>
+            <tr>
+                <td class="label-cell bolder">Sales Rep</td>
+                <td class="input-cell bolder" style="border-left-style: hidden;">{{ doc.sales_rep|default('') }}</td>
+                <td class="label-cell">Payment Terms</td>
+                <td class="input-cell" style="border-left-style: hidden;">{{ doc.payment_terms_template|default('') }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul style="margin-bottom: 2em;" class="multi-line-items no-margin">
+        {% for group in doc.items|groupby('line') %}
+        <li>
+            <div>
+                <div class="table-wrapper" style="width: 100%;">
+                    <table class="table table-bordered no-margin"
+                        style="table-layout: fixed; margin-bottom: 1em; border: 1px solid #000000; border-bottom-style: solid; border-bottom-width: 1px;">
+                        <thead {% if not loop.first %}style="display: none;" {% endif %}>
+                            <tr>
+                                <th style="width: 3em; border: 1px solid#000000;">LI#</th>
+                                <th style="width: 6em; border: 1px solid#000000; text-align: right;">Quantity</th>
+                                <th style="width: 15em; border: 1px solid#000000;">Part Number</th>
+                                <th style="border: 1px solid#000000;">Description</th>
+                                <th style="width: 8em; border: 1px solid#000000; text-align: right;">Unit Price</th>
+                                <th style="width: 10em; border: 1px solid#000000; text-align: right;">Extended Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in group.list|selectattr('description', 'ne', 'Freight')|selectattr('description', 'ne', 'Handling') %}
+                            <tr {% if not loop.last %}style="border-bottom-style: hidden;"
+                                {% else %}style="border-bottom-style: solid; border-bottom-width: 1px;" {% endif %}>
+                                <td style="width: 3em;">{% if loop.first %}{{ group.grouper }} {% endif %}</td>
+                                <td style="width: 6em; text-align: right;">{{ "{:,.2f}".format(item.qty) }}</td>
+                                <td style="width: 15em;">{{ item.part_number }}</td>
+                                <td>{{ item.description }}</td>
+                                <td style="width: 8em; text-align: right;">{{ "${:,.4f}".format(item.rate) }}</td>
+                                <td style="width: 10em; text-align: right;">{{ "${:,.2f}".format(item.amount) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    <table class="table table-bordered no-margin"
+        style="margin-bottom: 1em; border: 1px solid #000000; border-bottom-style: solid; border-bottom-width: 1px;">
+        <tbody>
+            <tr>
+                <td colspan="4" style="border-bottom-style: hidden;">
+                    <strong>Notes or Special Instructions</strong>
+                </td>
+                <td style="width: 8em;">
+                    {% set subtotal = doc.items|selectattr('description', 'ne', 'Freight')|selectattr('description', 'ne', 'Handling')|sum(attribute='amount') %}
+                    Subtotal:
+                </td>
+                <td style="text-align: right; width: 10em;">{{ "${:,.2f}".format(subtotal|float) }}</td>
+            </tr>
+            <tr>
+                <td colspan="4" rowspan="4">
+                    <div class="table-notes-cell">{{ doc.notes_or_special_instructions|replace('\n', '<br>')|safe }}</div>
+                </td>
+                <td>
+                    Freight:
+                </td>
+                <td style="text-align: right;">
+                    {% set freight = doc.items|selectattr('description', 'eq', 'Freight')|list %}
+                    {% if freight %}{{ "${:,.2f}".format(freight[0].amount|float) }}{% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Handling:
+                </td>
+                <td style="text-align: right;">
+                    {% set handling = doc.items|selectattr('description', 'eq', 'Handling')|list %}
+                    {% if handling %}{{ "${:,.2f}".format(handling[0].amount|float) }}{% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Order Total:
+                </td>
+                {% set subtotal = doc.items|sum(attribute='amount') %}
+                <td style="text-align: right;">{{ "${:,.2f}".format(subtotal|float) }}</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="background-color: #eeeeee;"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div>
+        <p>This quote is subject to change upon receipt and evaluation of the components being quoted.</p>
+        <p>Thank you for the opportunity to offer this quote and please do not hesitate to contact me with any questions you may have.</p>
+    </div>
+
+    
+     <div id="footer-html" class="visible-pdf">
+		<p class="text-center small page-number visible-pdf">
+			{{ _("Page {0} of {1}").format('<span class="page"></span>', '<span class="topage"></span>') }}
+		</p>
+	</div>
+</div>
+
+<div class="page-break">
+    <div style="height: 2.5em"></div>
+
+    <div>
+        <h1 style="font-size: 2.2em;"><strong>Terms and Conditions</strong></h1>
+        {% if doc.terms %}{{ doc.terms|safe }}{% endif %}
+        {% if doc.terms_details_2 %}{{ doc.terms_details_2|safe }}{% endif %}
+        {% if doc.terms_details_3 %}{{ doc.terms_details_3|safe }}{% endif %}
+        {% if doc.terms_details_4 %}{{ doc.terms_details_4|safe }}{% endif %}
+        {% if doc.terms_details_5 %}{{ doc.terms_details_5|safe }}{% endif %}
+        {% if doc.terms_details_6 %}{{ doc.terms_details_6|safe }}{% endif %}
+        {% if doc.terms_details_7 %}{{ doc.terms_details_7|safe }}{% endif %}
+        {% if doc.terms_details_8 %}{{ doc.terms_details_8|safe }}{% endif %}
+    </div>
+</div>
