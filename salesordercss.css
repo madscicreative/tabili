@@ -11,3 +11,33 @@
 table{
   border: 1px solid #000000
 }
+
+#center-div {
+  width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #ffffff
+}
+
+#container {
+  
+}
+
+#soheader{
+  text-align: center;
+}
+
+#tablediv {
+   padding: 1em;
+}
+
+table{
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td, th {
+  border-bottom: solid 1px;
+  border-right: solid 1px;
+  /*width: 200px;*/
+}
